@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>JS calculator</title>
+
+  <style>
+    html {
+      box-sizing: border-box;
+    }
+
+    *,
+    *:before,
+    *:after {
+      box-sizing: inherit;
+    }
+
+    body {
+      font-family: sans-serif;
+      font-size: 1.4rem;
+      background-color: rgb(255, 247, 237);
+      color: black;
+    }
+
+    .wrapper {
+      background-color: rgba(0, 0, 0, 0.6);
+      display: inline-block;
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 2px;
+    }
+
+    .form {
+      width: 100%;
+    }
+
+    .form__output {
+      width: 206.5px;
+      outline: none;
+      height: 50px;
+      border: none;
+      background-color: rgba(255, 255, 255, 0.92);
+      margin: 2px 2px 0;
+      text-align: right;
+      padding: 6px;
+      font-family: inherit;
+      font-size: inherit;
+      letter-spacing: 1px;
+    }
+
+    .form__output:focus {
+      background-color: rgba(254, 255, 200, 0.92);
+    }
+
+    /* input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0; 
+    } */
+
+    .pad {
+      margin: 2px 0 0;
+    }
+
+    .pad__btn {
+      width: 50px;
+      height: 50px;
+      background-color: aquamarine;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .pad__btn:hover {
+      background-color: aqua;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <form class="form">
+      <input type="text" maxlength="14" autofocus readonly id="field" autocomplete="off" placeholder="0" class="form__output"
+        onkeypress="return noenter()">
+    </form>
+    <table id="num-pad" class="pad">
+      <tr>
+        <td class="pad__btn" onclick="clearAll()">c</td>
+        <td class="pad__btn" onclick="lessThen()">&lt;</td>
+        <td class="pad__btn" onclick="action('divide')">/</td>
+        <td class="pad__btn" onclick="action('multiply')">*</td>
+      </tr>
+      <tr>
+        <td class="pad__btn number" onclick="output(7)">7</td>
+        <td class="pad__btn number" onclick="output(8)">8</td>
+        <td class="pad__btn number" onclick="output(9)">9</td>
+        <td class="pad__btn" onclick="action('minus')">-</td>
+      </tr>
+      <tr>
+        <td class="pad__btn number" onclick="output(4)">4</td>
+        <td class="pad__btn number" onclick="output(5)">5</td>
+        <td class="pad__btn number" onclick="output(6)">6</td>
+        <td class="pad__btn" onclick="action('plus')">+</td>
+      </tr>
+      <tr>
+        <td class="pad__btn number" onclick="output(1)">1</td>
+        <td class="pad__btn number" onclick="output(2)">2</td>
+        <td class="pad__btn number" onclick="output(3)">3</td>
+        <td class="pad__btn" rowspan="2" onclick="result()">=</td>
+      </tr>
+      <tr>
+        <td class="pad__btn" onclick="plusMinus()">+/-</td>
+        <td class="pad__btn number" onclick="output(0)">0</td>
+        <td class="pad__btn" onclick="output('.')">,</td>
+      </tr>
+    </table>
+  </div>
+
+  <script>
+    document.addEventListener("keyup", btnPress);
+
+    function btnPress(e) {
+      // Checking if the form is in focus
+      if (document.querySelector("#field") === document.activeElement) {
+        switch (e.key) {
+          case "0":
+            output(0);
+            break;
+          case "1":
+            output(1);
+            break;
+          case "2":
+            output(2);
+            break;
+          case "3":
+            output(3);
+            break;
+          case "4":
+            output(4);
+            break;
+          case "5":
+            output(5);
+            break;
+          case "6":
+            output(6);
+            break;
+          case "7":
+            output(7);
+            break;
+          case "8":
+            output(8);
+            break;
+          case "9":
+            output(9);
+            break;
+          case ".":
+            output('.');
+            break;
+          case "+":
+            action('plus');
+            break;
+          case "-":
+            action('minus');
+            break;
+          case "*":
+            action('multiply');
+            break;
+          case "/":
+            action('divide');
+            break;
+          case "Escape":
+            clearAll();
+            break;
+          case "Backspace":
+            lessThen();
+            break;
+          case "Enter":
+            e.preventDefault();
+            result();
+            break;
+        }
+      }
+    };
+
+    // // Prevent ENTER from submitting
+    function noenter() {
+      return !(window.event && window.event.keyCode == 13);
+    }
+
+    function output(val) {
+      sessionStorage.removeItem("check");
+      if (document.querySelector("#field").value.length < 14) {
+        if (val == ".") {
+          if (document.querySelector("#field").value == "") {
+            setTimeout(function () {
+              document.querySelector("#num-pad").removeEventListener("click", clearPrev);
+              document.removeEventListener("keyup", clearPrevBtn);
+              document.querySelector("#field").value += `0${val}`;
+            }, 10)
+          } else {
+            setTimeout(function () {
+              document.querySelector("#num-pad").removeEventListener("click", clearPrev);
+              document.removeEventListener("keyup", clearPrevBtn);
+              document.querySelector("#field").value += val;
+            }, 10)
+          }
+        } else {
+          setTimeout(function () {
+            document.querySelector("#num-pad").removeEventListener("click", clearPrev);
+            document.removeEventListener("keyup", clearPrevBtn);
+            document.querySelector("#field").value += val;
+          }, 10)
+        }
+      }
+    };
+
+    function clearPrevBtn(e) {
+      const numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."];
+      numbers.forEach(function (item) {
+        if (item == e.key) {
+          document.querySelector("#field").value = "";
+        }
+      });
+    }
+
+    function clearPrev(e) {
+      if (e.target.classList.contains("number")) {
+        document.querySelector("#field").value = "";
+      }
+    }
+
+    function clearStorage() {
+      sessionStorage.removeItem("plus");
+      sessionStorage.removeItem("minus");
+      sessionStorage.removeItem("multiply");
+      sessionStorage.removeItem("divide");
+    }
+
+    function clearAll() {
+      document.querySelector("#field").value = "";
+      clearStorage();
+      sessionStorage.removeItem("check");
+    };
+
+    function lessThen() {
+      const val = document.querySelector("#field").value;
+      const result = val.substring(0, val.length - 1);
+      document.querySelector("#field").value = result;
+    };
+
+    function plusMinus() {
+      const val = document.querySelector("#field").value;
+      if (val.charAt("0") != "-") {
+        document.querySelector("#field").value = `-${val}`;
+      } else {
+        document.querySelector("#field").value = val.substring(1);
+      }
+    }
+
+    function action(id) {
+      const current = document.querySelector("#field").value;
+      let storageVal, tempResult;
+
+      if (sessionStorage.getItem("check")) {
+        if (sessionStorage.getItem("plus")) {
+          storageVal = Number(JSON.parse(sessionStorage.getItem("plus")));
+          clearStorage();
+          sessionStorage.setItem(id, JSON.stringify(storageVal));
+        } else if (sessionStorage.getItem("minus")) {
+          storageVal = Number(JSON.parse(sessionStorage.getItem("minus")));
+          clearStorage();
+          sessionStorage.setItem(id, JSON.stringify(storageVal));
+
+        } else if (sessionStorage.getItem("multiply")) {
+          storageVal = Number(JSON.parse(sessionStorage.getItem("multiply")));
+          clearStorage();
+          sessionStorage.setItem(id, JSON.stringify(storageVal));
+
+        } else if (sessionStorage.getItem("divide")) {
+          storageVal = Number(JSON.parse(sessionStorage.getItem("divide")));
+          clearStorage();
+          sessionStorage.setItem(id, JSON.stringify(storageVal));
+
+        } else {
+          sessionStorage.setItem(id, JSON.stringify(current));
+        }
+      } else {
+        if (sessionStorage.getItem("plus")) {
+          storageVal = Number(JSON.parse(sessionStorage.getItem("plus")));
+          tempResult = storageVal + Number(current);
+          clearStorage();
+          sessionStorage.setItem(id, JSON.stringify(tempResult));
+
+        } else if (sessionStorage.getItem("minus")) {
+          storageVal = Number(JSON.parse(sessionStorage.getItem("minus")));
+          tempResult = storageVal - Number(current);
+          clearStorage();
+          sessionStorage.setItem(id, JSON.stringify(tempResult));
+
+        } else if (sessionStorage.getItem("multiply")) {
+          storageVal = Number(JSON.parse(sessionStorage.getItem("multiply")));
+          tempResult = storageVal * Number(current);
+          clearStorage();
+          sessionStorage.setItem(id, JSON.stringify(tempResult));
+
+        } else if (sessionStorage.getItem("divide")) {
+          storageVal = Number(JSON.parse(sessionStorage.getItem("divide")));
+          tempResult = storageVal / Number(current);
+          clearStorage();
+          sessionStorage.setItem(id, JSON.stringify(tempResult));
+
+        } else {
+          sessionStorage.setItem(id, JSON.stringify(current));
+        }
+      }
+      document.querySelector("#num-pad").addEventListener("click", clearPrev);
+      document.addEventListener("keyup", clearPrevBtn);
+
+      sessionStorage.setItem("check", id);
+    };
+
+    function result() {
+      const temp = document.querySelector("#field").value;
+
+      if (sessionStorage.getItem("plus")) {
+        let val = Number(JSON.parse(sessionStorage.getItem("plus")));
+        document.querySelector("#field").value = val + Number(temp);
+
+      } else if (sessionStorage.getItem("minus")) {
+        let val = Number(JSON.parse(sessionStorage.getItem("minus")));
+        document.querySelector("#field").value = val - Number(temp);
+
+      } else if (sessionStorage.getItem("multiply")) {
+        let val = Number(JSON.parse(sessionStorage.getItem("multiply")));
+        document.querySelector("#field").value = val * Number(temp);
+
+      } else if (sessionStorage.getItem("divide")) {
+        let val = Number(JSON.parse(sessionStorage.getItem("divide")));
+        document.querySelector("#field").value = val / Number(temp);
+
+      }
+      clearStorage();
+      sessionStorage.removeItem("check");
+    };
+  </script>
+</body>
+
+</html>
